@@ -24,3 +24,16 @@ D:\Code\Weekly-projects\theater booking\theater booking\obj\Debug\netcoreapp3.1\
 D:\Code\Weekly-projects\theater booking\theater booking\obj\Debug\netcoreapp3.1\theater booking.dll
 D:\Code\Weekly-projects\theater booking\theater booking\obj\Debug\netcoreapp3.1\theater booking.pdb
 D:\Code\Weekly-projects\theater booking\theater booking\obj\Debug\netcoreapp3.1\theater booking.genruntimeconfig.cache
+D:\Code\week 1 - Cinema project\theater booking\bin\Debug\netcoreapp3.1\theater booking.exe
+D:\Code\week 1 - Cinema project\theater booking\bin\Debug\netcoreapp3.1\theater booking.deps.json
+D:\Code\week 1 - Cinema project\theater booking\bin\Debug\netcoreapp3.1\theater booking.runtimeconfig.json
+D:\Code\week 1 - Cinema project\theater booking\bin\Debug\netcoreapp3.1\theater booking.runtimeconfig.dev.json
+D:\Code\week 1 - Cinema project\theater booking\bin\Debug\netcoreapp3.1\theater booking.dll
+D:\Code\week 1 - Cinema project\theater booking\bin\Debug\netcoreapp3.1\theater booking.pdb
+D:\Code\week 1 - Cinema project\theater booking\obj\Debug\netcoreapp3.1\theater booking.csproj.AssemblyReference.cache
+D:\Code\week 1 - Cinema project\theater booking\obj\Debug\netcoreapp3.1\theater booking.AssemblyInfoInputs.cache
+D:\Code\week 1 - Cinema project\theater booking\obj\Debug\netcoreapp3.1\theater booking.AssemblyInfo.cs
+D:\Code\week 1 - Cinema project\theater booking\obj\Debug\netcoreapp3.1\theater booking.csproj.CoreCompileInputs.cache
+D:\Code\week 1 - Cinema project\theater booking\obj\Debug\netcoreapp3.1\theater booking.dll
+D:\Code\week 1 - Cinema project\theater booking\obj\Debug\netcoreapp3.1\theater booking.pdb
+D:\Code\week 1 - Cinema project\theater booking\obj\Debug\netcoreapp3.1\theater booking.genruntimeconfig.cache

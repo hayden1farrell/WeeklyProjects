@@ -1,16 +1,16 @@
 using System;
+using System.Collections.Generic;
 
 namespace Cine_booking
 {
-
-
     class Program
-    {
+    { 
         static void Main(string[] args)
         {
             bool run = true;
             while (run == true)
             {
+                Console.Clear();
                 Console.WriteLine("\n\nwelcome to the cinema!\n\n");
                 System.Threading.Thread.Sleep(1000);
                 GetPeopleAges();
@@ -98,15 +98,16 @@ namespace Cine_booking
 
             ticketBooking(numberOfPeople, ages);
         }
-        static string FilmSelection(string[,] filmLists, int minAge)
+        static (string, int) FilmSelection(string[,] filmLists, int minAge)
         {
             string film = "";
             bool valid = false;
+            int filmNumber = 0;
 
             while (valid == false)
             {
                 Console.WriteLine("\n");
-                int filmNumber = GetIntInput($"\nChoose the film number in which you would like to see", 0, 5);
+                filmNumber = GetIntInput($"\nChoose the film number in which you would like to see", 0, 5);
                 film = filmLists[filmNumber - 1, 1];
                 Console.WriteLine($"You have choosen to see film number {filmNumber} this is film {film} is this correct yes or no");
                 string doubleCheck = Console.ReadLine().ToLower();
@@ -127,8 +128,7 @@ namespace Cine_booking
                     _ = DisplayFilms();
                 }
             }
-
-            return film;
+            return (film, filmNumber);
         }
         static void ticketBooking(int numOfPeople, int[] ages)
         {
@@ -137,16 +137,16 @@ namespace Cine_booking
 
             System.Threading.Thread.Sleep(500);
 
-            Console.WriteLine($"\n\nYou are booking {numOfPeople} tickets. You can see films up to an age rating of {maxFilmRating}");
+            Console.WriteLine($"\n\nYou are booking {numOfPeople} tickets. You can see films up to an age rating of {maxFilmRating}\n");
 
             string[,] filmList = DisplayFilms();
 
-            string film = FilmSelection(filmList, minAge);
+            (string film, int filmNumber) = FilmSelection(filmList, minAge);
 
             Console.WriteLine($"You will have {numOfPeople} tickets to see {film}");
 
 
-            SeatBooking(numOfPeople, film);
+            SeatBooking(numOfPeople, film, filmNumber);
 
             double cost = CalculateCost(numOfPeople, ages);
             System.Threading.Thread.Sleep(500);
@@ -169,14 +169,17 @@ namespace Cine_booking
             System.Threading.Thread.Sleep(300);
 
 
-            Console.WriteLine($"------\nCINEMA DELEXUE\nFILM : {film}\nNumber of people : {numberOfPeople}\nCOST : {cost}\nDATE : {selectedDate}\n------");
+            Console.WriteLine($"\n\n------\nCINEMA DELEXUE\nFILM : {film}\nNumber of people : {numberOfPeople}\nCOST : {cost}\nDATE : {selectedDate}\n------");
+
+            Console.WriteLine("\n\nPress any key to finsh");
+            Console.ReadKey();
         }
         static void Payment(double cost, int numberOfPeople)
         {
             Console.WriteLine($"\nIt will cost {cost} for {numberOfPeople} number of people");
             double payment = 0.00;
 
-            while(payment < cost)
+            while (payment < cost)
             {
                 try
                 {
@@ -201,7 +204,7 @@ namespace Cine_booking
             string seletedDate = "";
 
             bool check = false;
-            while(check == false)
+            while (check == false)
             {
                 int daysInAdvance = GetIntInput("How many days in advance do you wish to book", 0, 7);
                 seletedDate = todaysDate.AddDays(daysInAdvance).ToString("dd/MM/yyyy");
@@ -219,15 +222,6 @@ namespace Cine_booking
 
             return seletedDate;
         }
-        static void SeatBooking(int numberOfPeople, string film)
-        {
-            System.Threading.Thread.Sleep(1000);
-
-            Console.WriteLine("\nYou will now book your seats");
-            // TODO - use a class
-
-            Console.WriteLine("You have now book your seats\n");
-        }
 
         static double CalculateCost(int numberOfPeople, int[] ages)
         {
@@ -235,7 +229,7 @@ namespace Cine_booking
             double price = 7.00;
             int adults = 0;
 
-            foreach(int age in ages)
+            foreach (int age in ages)
             {
                 if (age >= 18)
                     adults += 1;
@@ -250,6 +244,61 @@ namespace Cine_booking
             Console.WriteLine("Payment will be taken at the end\n");
 
             return cost;
+        }
+
+        static string[,] initlizeScreen()
+        {
+            string[,] seats = new string[8, 8];
+
+            for (int y = 0; y < 8; y++)
+            {
+                for (int x = 0; x < 8; x++)
+                {
+                    seats[y, x] = "0";
+                }
+            }
+
+            return seats;
+        }
+        static Dictionary<string, string[,]> Screen()
+        {
+            Dictionary<string, string[,]> screens = new Dictionary<string, string[,]>();
+            for (int i = 0; i < 5; i++)
+            {
+                screens.Add(i.ToString(), initlizeScreen());
+            }
+            return screens;
+        }
+        static void DisplaySeats(string[,] seats)
+        {
+            Console.Write("    ");
+            for (int i = 1; i < 9; i++)
+            {
+                Console.Write($"{i}");
+            }
+            Console.WriteLine("\n");
+            for (int x = 0; x < 8; x++)
+            {
+                Console.Write($"{x + 1} - ");
+                for (int y = 0; y < 8; y++)
+                {
+                    Console.Write(seats[x, y]);
+                }
+                Console.WriteLine();
+            }
+        }
+        static void SeatBooking(int numberOfPeople, string film, int filmNumber)
+        {
+            System.Threading.Thread.Sleep(1000);
+            Console.WriteLine("\nYou will now book your seats");
+
+            Dictionary<string, string[,]> screens = Screen();
+
+            string[,] seats = screens[(filmNumber-1).ToString()];
+
+            DisplaySeats(seats);
+
+            Console.WriteLine("You have now book your seats\n");
         }
     }
 }
