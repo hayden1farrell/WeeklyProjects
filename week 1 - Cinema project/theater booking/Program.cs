@@ -4,18 +4,54 @@ using System.Collections.Generic;
 namespace Cine_booking
 {
     class Program
-    { 
+    {
         static void Main(string[] args)
         {
             bool run = true;
+            Dictionary<string, string[,]> screens = Screen();
+
+            DateTime todaysDate = DateTime.Now.Date;
+
+
             while (run == true)
             {
                 Console.Clear();
                 Console.WriteLine("\n\nwelcome to the cinema!\n\n");
                 System.Threading.Thread.Sleep(1000);
-                GetPeopleAges();
+                screens = GetPeopleAges(screens);
 
+                if (todaysDate < DateTime.Now.Date)
+                { 
+                    screens = NewDayResets(screens);
+                    todaysDate = DateTime.Now.Date;
+                } 
             }
+        }
+
+        static Dictionary<string, string[,]> NewDayResets(Dictionary<string, string[,]> screens)
+        {
+            Console.WriteLine("reseting cinema data");
+
+            Dictionary<string, string[,]> seatData = new Dictionary<string, string[,]>();
+
+            for (int daysInAdvance = 0; daysInAdvance < 8; daysInAdvance++)
+            {
+                for (int filmNumber = 1; filmNumber < 6; filmNumber++)
+                {
+                    if (daysInAdvance != 0)
+                    {
+                        string[,] seats = screens[$"{daysInAdvance},{filmNumber}"];
+                        string dayAndScreenNum = $"{daysInAdvance - 1},{filmNumber}";
+                        seatData.Add(dayAndScreenNum, seats);
+                    }
+                    else
+                    {
+                        string dayAndScreenNum = $"7,{filmNumber}";
+                        seatData.Add(dayAndScreenNum, initlizeScreen());
+                    }
+                }
+            }
+            return seatData;
         }
 
         static int GetIntInput(string msg, int lowerBound, int upperBound)
@@ -33,7 +69,7 @@ namespace Cine_booking
                     if (_int >= lowerBound && _int <= upperBound)
                         valid = true;
                     else
-                        Console.WriteLine($"invlaid input must be more than {lowerBound - 1} and less than {upperBound}");
+                        Console.WriteLine($"invlaid input must be more than {lowerBound} and less than {upperBound}");
                 }
                 catch
                 {
@@ -55,21 +91,45 @@ namespace Cine_booking
             }
             return smallest;
         }
-        static string[,] DisplayFilms()
+        static string[,] DisplayFilms(Dictionary<string, string[,]> screens)
         {
 
             string[,] filmList = new string[5, 4] { { "1", "toy story", "u", "0" }, { "2", "superman", "12", "12" }, { "3", "planes", "u", "0" }, { "4", "1917", "18", "18" }, { "5", "set", "15", "15" } };
 
+            Console.WriteLine("\n-------------------------------------------------------------");
             for (int x = 0; x < 5; x++)
             {
                 for (int y = 0; y < 3; y++)
                 {
                     Console.Write($"{filmList[x, y],10}");
                 }
-                Console.WriteLine("\n---------------------------------------");
+                // pain to come
+                DisplayTicketsSold(screens, x);
+
             }
+            Console.WriteLine("\n-------------------------------------------------------------");
 
             return filmList;
+        }
+        static void DisplayTicketsSold(Dictionary<string, string[,]> screens, int filmNumber)
+        {
+            int ticketsSold = 0;
+
+            // loop through only the certain cinema screen
+            for (int daysInAdvance = 0; daysInAdvance < 8; daysInAdvance++)
+            {
+                string[,] seats = screens[$"{daysInAdvance},{filmNumber + 1}"];
+
+                foreach (string seat in seats)
+                {
+                    if (seat == "X")
+                    {
+                        ticketsSold++;
+                    }
+                }
+            }
+
+            Console.WriteLine($"\tTotal tickets sold : {ticketsSold}");
         }
         static string MaxAgeRating(int minAge)
         {
@@ -84,9 +144,9 @@ namespace Cine_booking
 
             return maxAgeRating;
         }
-        static void GetPeopleAges()
+        static Dictionary<string, string[,]> GetPeopleAges(Dictionary<string, string[,]> screens)
         {
-            int numberOfPeople = GetIntInput("How many people are you booking for", 0, 64);
+            int numberOfPeople = GetIntInput("How many people are you booking for", 0, 45);
             int[] ages = new int[numberOfPeople];
 
             for (int x = 0; x < numberOfPeople; x++)
@@ -96,9 +156,11 @@ namespace Cine_booking
                 ages[x] = ageOfPerson;
             }
 
-            ticketBooking(numberOfPeople, ages);
+            Dictionary<string, string[,]> updatedScreen = ticketBooking(numberOfPeople, ages, screens);
+
+            return updatedScreen;
         }
-        static (string, int) FilmSelection(string[,] filmLists, int minAge)
+        static (string, int) FilmSelection(string[,] filmLists, int minAge, Dictionary<string, string[,]> screens)
         {
             string film = "";
             bool valid = false;
@@ -125,12 +187,12 @@ namespace Cine_booking
                 else
                 {
                     Console.WriteLine("You can choose a new film ");
-                    _ = DisplayFilms();
+                    _ = DisplayFilms(screens);
                 }
             }
             return (film, filmNumber);
         }
-        static void ticketBooking(int numOfPeople, int[] ages)
+        static Dictionary<string, string[,]> ticketBooking(int numOfPeople, int[] ages, Dictionary<string, string[,]> screens)
         {
             int minAge = SmallestInt(ages);
             string maxFilmRating = MaxAgeRating(minAge);
@@ -139,21 +201,21 @@ namespace Cine_booking
 
             Console.WriteLine($"\n\nYou are booking {numOfPeople} tickets. You can see films up to an age rating of {maxFilmRating}\n");
 
-            string[,] filmList = DisplayFilms();
+            string[,] filmList = DisplayFilms(screens);
 
-            (string film, int filmNumber) = FilmSelection(filmList, minAge);
+            (string film, int filmNumber) = FilmSelection(filmList, minAge, screens);
 
             Console.WriteLine($"You will have {numOfPeople} tickets to see {film}");
 
-
-            SeatBooking(numOfPeople, film, filmNumber);
+            (string selectedDate, int daysInAdvance) = DateSelection(screens, numOfPeople, filmNumber);
+            Dictionary<string, string[,]> updatedScreens = SeatBooking(numOfPeople, film, filmNumber, daysInAdvance, screens);
 
             double cost = CalculateCost(numOfPeople, ages);
             System.Threading.Thread.Sleep(500);
 
-
-            string selectedDate = DateSelection();
             Finsh(selectedDate, cost, numOfPeople, film);
+
+            return updatedScreens;
         }
 
         static void Finsh(string selectedDate, double cost, int numberOfPeople, string film)
@@ -169,14 +231,14 @@ namespace Cine_booking
             System.Threading.Thread.Sleep(300);
 
 
-            Console.WriteLine($"\n\n------\nCINEMA DELEXUE\nFILM : {film}\nNumber of people : {numberOfPeople}\nCOST : {cost}\nDATE : {selectedDate}\n------");
+            Console.WriteLine($"\n\n------\nCINEMA DELEXUE\nFILM : {film}\nNumber of people : {numberOfPeople}\nCOST : £{cost}\nDATE : {selectedDate}\n------");
 
             Console.WriteLine("\n\nPress any key to finsh");
             Console.ReadKey();
         }
         static void Payment(double cost, int numberOfPeople)
         {
-            Console.WriteLine($"\nIt will cost {cost} for {numberOfPeople} number of people");
+            Console.WriteLine($"\nIt will cost £{cost} for {numberOfPeople} number of people");
             double payment = 0.00;
 
             while (payment < cost)
@@ -197,30 +259,55 @@ namespace Cine_booking
 
             Console.WriteLine($"You have payed your change is £{payment - cost}");
         }
-        static string DateSelection()
+        static (string, int) DateSelection(Dictionary<string, string[,]> screens, int numberOfPeople, int filmNumber)
         {
             DateTime todaysDate = DateTime.Now;
             Console.WriteLine($"\ntodays date is {todaysDate.ToString("dd/MM/yyyy")} please select a date now more than 1 week later");
             string seletedDate = "";
+            int daysInAdvance = 0;
 
             bool check = false;
             while (check == false)
             {
-                int daysInAdvance = GetIntInput("How many days in advance do you wish to book", 0, 7);
+                daysInAdvance = GetIntInput("How many days in advance do you wish to book", 0, 7);
                 seletedDate = todaysDate.AddDays(daysInAdvance).ToString("dd/MM/yyyy");
 
                 Console.WriteLine($"\nYou have selected {seletedDate} this is {daysInAdvance} days in the future");
                 Console.WriteLine("Are you happy with this choice yes or no");
                 string correctChoice = Console.ReadLine().ToLower();
 
-                if (correctChoice != "no")
+                bool enoughSpace = checkIfEnoughSpace(screens, numberOfPeople, daysInAdvance, filmNumber);
+
+                if (correctChoice != "no" && enoughSpace == true)
                     check = true;
                 else
                     Console.WriteLine("Please select again");
 
             }
 
-            return seletedDate;
+            return (seletedDate, daysInAdvance);
+        }
+
+        static bool checkIfEnoughSpace(Dictionary<string, string[,]> screens, int numberOfPeople, int daysInAdvance, int filmNumber)
+        {
+            bool enoughSpace = true;
+            int emptySeats = 0;
+
+            string[,] seats = screens[$"{daysInAdvance},{filmNumber}"];
+
+            for (int i = 0; i < 9; i++)
+            {
+                for (int x = 0; x < 5; x++)
+                {
+                    if (seats[x, i] != "X")
+                        emptySeats += 1;
+                }
+            }
+
+            if (numberOfPeople > emptySeats)
+                enoughSpace = false;
+
+            return enoughSpace;
         }
 
         static double CalculateCost(int numberOfPeople, int[] ages)
@@ -248,11 +335,11 @@ namespace Cine_booking
 
         static string[,] initlizeScreen()
         {
-            string[,] seats = new string[8, 8];
+            string[,] seats = new string[5, 9];
 
-            for (int y = 0; y < 8; y++)
+            for (int y = 0; y < 5; y++)
             {
-                for (int x = 0; x < 8; x++)
+                for (int x = 0; x < 9; x++)
                 {
                     seats[y, x] = "0";
                 }
@@ -262,43 +349,75 @@ namespace Cine_booking
         }
         static Dictionary<string, string[,]> Screen()
         {
-            Dictionary<string, string[,]> screens = new Dictionary<string, string[,]>();
-            for (int i = 0; i < 5; i++)
+            Dictionary<string,string[,]> screens = new Dictionary<string, string[,]>();
+            for (int day = 0; day < 8; day++)
             {
-                screens.Add(i.ToString(), initlizeScreen());
+                for (int screenNumber = 1; screenNumber < 6; screenNumber++)
+                {
+                    string dayAndScreenNum = $"{day},{screenNumber}";
+
+                    screens.Add(dayAndScreenNum, initlizeScreen());
+                }
             }
             return screens;
         }
         static void DisplaySeats(string[,] seats)
         {
-            Console.Write("    ");
-            for (int i = 1; i < 9; i++)
+            Console.Write("  ");
+            for (int i = 1; i < 10; i++)
             {
                 Console.Write($"{i}");
             }
-            Console.WriteLine("\n");
-            for (int x = 0; x < 8; x++)
+            Console.WriteLine();
+            for (int x = 0; x < 5; x++)
             {
-                Console.Write($"{x + 1} - ");
-                for (int y = 0; y < 8; y++)
+                Console.Write($"{x + 1} ");
+                for (int y = 0; y < 9; y++)
                 {
                     Console.Write(seats[x, y]);
                 }
                 Console.WriteLine();
             }
         }
-        static void SeatBooking(int numberOfPeople, string film, int filmNumber)
+        static Dictionary<string, string[,]> SeatBooking(int numberOfPeople, string film, int filmNumber, int daysInAdvance, Dictionary<string, string[,]> screens)
         {
-            System.Threading.Thread.Sleep(1000);
+            System.Threading.Thread.Sleep(500);
+
+            int xCorrdinate = 0;
+            int yCorrdinate = 0;
             Console.WriteLine("\nYou will now book your seats");
 
-            Dictionary<string, string[,]> screens = Screen();
+            string[,] seats = screens[$"{daysInAdvance},{filmNumber}"];
 
-            string[,] seats = screens[(filmNumber-1).ToString()];
+            for (int bookedseats = 0; bookedseats < numberOfPeople; bookedseats++)
+            {
+                bool valid = false;
+                while(valid == false)
+                {
+                    DisplaySeats(seats);
+                    xCorrdinate = GetIntInput($"\nplease select the x value of your wanted seat for person {bookedseats + 1}", 1, 9);
+                    yCorrdinate = GetIntInput($"\nplease select the y value of your wanted seat for person {bookedseats + 1}", 1, 5);
 
-            DisplaySeats(seats);
+                    Console.WriteLine($"for person {bookedseats + 1} you have selected seat {xCorrdinate}{yCorrdinate}");
+
+                    if (seats[yCorrdinate - 1, xCorrdinate - 1] != "X")
+                        valid = true;
+                    else
+                        Console.WriteLine("the seat is already taken please choose one labeled with 0\n");
+                    System.Threading.Thread.Sleep(500);
+                }
+                Console.WriteLine($"For person {bookedseats + 1} you have book seat {xCorrdinate}{yCorrdinate}");
+                seats[yCorrdinate - 1, xCorrdinate -1] = "X";
+            }
+
+            screens[$"{daysInAdvance},{filmNumber}"] = seats;
+
+            DisplaySeats(screens[$"{daysInAdvance},{filmNumber}"]);
 
             Console.WriteLine("You have now book your seats\n");
+            System.Threading.Thread.Sleep(500);
+
+            return screens;
         }
     }
 }
