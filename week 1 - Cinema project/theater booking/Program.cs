@@ -65,7 +65,7 @@ namespace Cine_booking
             {
                 for (int filmNumber = 1; filmNumber < 6; filmNumber++)                      // loops through the films begin at 1 because the films are displayed as 1 - 5
                 {
-                    if (daysInAdvance != 0)                                                 // makes sure the day is not yesterday oto prevent old data being reused?????????
+                    if (daysInAdvance != 0)                                                 // makes sure the day is not yesterday to prevent old data being reused
                     {
                         string[,] seats = screens[$"{daysInAdvance},{filmNumber}"];         // sets the 2d string array to be the the same seat data from the day before. copys the data
                         string dayAndScreenNum = $"{daysInAdvance - 1},{filmNumber}";       // gets the key of the array which is the days - 1 to account for the new a day and the film number
@@ -83,131 +83,136 @@ namespace Cine_booking
 
         static int GetIntInput(string msg, int lowerBound, int upperBound)
         {
-            int _int = 0;
-            bool valid = false;
+            int userIntput = 0;                                                             // instiltise the vairble userIntput an assigns it to 0
+            bool valid = false;                                                             // instiltise the bool valid to be the while loop variable 
 
-            while (valid == false)
+            while (valid == false)                                                          // runs for ever unitill conditions are met
             {
                 try
                 {
-                    Console.WriteLine(msg);
-                    _int = int.Parse(Console.ReadLine());
+                    Console.WriteLine(msg);                                                 // out puts the argument msg which will ask the user to input an int
+                    userIntput = int.Parse(Console.ReadLine());                             // gets the user input as a string and parses it to an int
 
-                    if (_int >= lowerBound && _int <= upperBound)
-                        valid = true;
+                    if (userIntput >= lowerBound && userIntput <= upperBound)               // checks weather the users int is within the correct upper and lower bounds
+                        valid = true;                                                       // the int is valid so valid is set to true to end the loop
                     else
-                        Console.WriteLine($"invlaid input must be more than {lowerBound} and less than {upperBound}");
+                        Console.WriteLine($"invlaid input must be more than {lowerBound} and less than {upperBound}");  // outputs the message to tell the users the bounds needed for the input
                 }
                 catch
                 {
-                    Console.WriteLine("You input was not an int");
+                    Console.WriteLine("You input was not an int");                          // printed when the input is not an int
                 }
             }
 
-            return _int;
+            return userIntput;                                                              // returns the int that the user inputed
         }
-        static int SmallestInt(int[] arr)
+        static int SmallestInt(int[] arr)       
         {
-            int smallest = arr[0];
-            for (int i = 1; i < arr.Length; i++)
+            int smallest = arr[0];                   // gets the first value of the array
+            for (int i = 1; i < arr.Length; i++)     // sets i as the loop variable and loops for the length of the array
             {
-                if (arr[i] < smallest)
+                if (arr[i] < smallest)              // sees if the current index of the array is less then the smallest
                 {
-                    smallest = arr[i];
+                    smallest = arr[i];              // assigns the varible arr[i] to smallest
                 }
             }
-            return smallest;
+            return smallest;                        // returns the smallest found number
         }
         static string[,] DisplayFilms(Dictionary<string, string[,]> screens)
         {
 
             string[,] filmList = new string[5, 4] { { "1", "toy story", "u", "0" }, { "2", "superman", "12", "12" }, { "3", "planes", "u", "0" }, { "4", "1917", "18", "18" }, { "5", "set", "15", "15" } };
+            // an array of all the films their number and age rating is created
 
             Console.WriteLine("\n-------------------------------------------------------------");
-            for (int x = 0; x < 5; x++)
+            for (int x = 0; x < 5; x++)                         // loops for 5 times
             {
-                for (int y = 0; y < 3; y++)
+                for (int y = 0; y < 3; y++)                     // loops for 3 times
                 {
-                    Console.Write($"{filmList[x, y],10}");
+                    Console.Write($"{filmList[x, y],10}");      // writes the index of filmlist with the current variable and adds a spacing of 10
                 }
-                // pain to come
-                DisplayTicketsSold(screens, x);
+
+                DisplayTicketsSold(screens, x);                 // calls a procdure to display the number of tickets sold
 
             }
             Console.WriteLine("\n-------------------------------------------------------------");
 
-            return filmList;
+            return filmList;                                    // returns the list of films
         }
         static void DisplayTicketsSold(Dictionary<string, string[,]> screens, int filmNumber)
         {
-            int ticketsSold = 0;
-
+            int ticketsSold = 0;                                                        //creates and instisles the variable ticketsSold
+                
             // loop through only the certain cinema screen
-            for (int daysInAdvance = 0; daysInAdvance < 8; daysInAdvance++)
+            for (int daysInAdvance = 0; daysInAdvance < 8; daysInAdvance++)             // loops 8 times for the 8 possible days
             {
-                string[,] seats = screens[$"{daysInAdvance},{filmNumber + 1}"];
+                string[,] seats = screens[$"{daysInAdvance},{filmNumber + 1}"];         // gets the seats for the current date and the film
 
-                foreach (string seat in seats)
+                foreach (string seat in seats)                                          // loops through the seat array
                 {
-                    if (seat == "X")
+                    if (seat == "X")                                                    // sees if the current seat value  is X
                     {
-                        ticketsSold++;
+                        ticketsSold++;                                                  // adds one to the tickets sold
                     }
                 }
             }
 
-            Console.WriteLine($"\tTotal tickets sold : {ticketsSold}");
+            Console.WriteLine($"\tTotal tickets sold : {ticketsSold}");                 // displays the amount of tickets sold for the whole week for a certain film
         }
         static string MaxAgeRating(int minAge)
         {
-            string maxAgeRating = "18";
+            string maxAgeRating = "18";             // creates the maxAgeRating variable which is the max film rating the users group can see
 
-            if (minAge < 12)
+            if (minAge < 12)                        // sees if the youngest member of the group is yonger than 12
                 maxAgeRating = "U";
-            else if (minAge < 15)
-                maxAgeRating = "12";
-            else if (minAge < 18)
+            else if (minAge < 15)                   // sees if the youngest member of the group is yonger than 15
+                maxAgeRating = "12";               
+            else if (minAge < 18)                   //sees if the youngest member of the group is yonger than 18
                 maxAgeRating = "15";
 
-            return maxAgeRating;
+            return maxAgeRating;                    // returns the string is the max film rating the users group can see
         }
         static (int, int[]) GetPeopleAges()
         {
-            int numberOfPeople = GetIntInput("How many people are you booking for", 0, 45);
-            int[] ages = new int[numberOfPeople];
+            int numberOfPeople = GetIntInput("How many people are you booking for", 0, 45);             
+            // gets the int amount of people the user is booking for making sure it is greater than 0 and no more than 45
 
-            for (int x = 0; x < numberOfPeople; x++)
+            int[] ages = new int[numberOfPeople];           // creates an int array with the length of the number of people
+
+            for (int x = 0; x < numberOfPeople; x++)        // loops through every single person
             {
-                int ageOfPerson = GetIntInput($"\nWhat is the age of the number {x + 1} person in your booking", 0, 150);
-                ages[x] = ageOfPerson;
+                int ageOfPerson = GetIntInput($"\nWhat is the age of the number {x + 1} person in your booking", 0, 150);   
+                // gets the age of the user making sure they are older than 0 and no more than 150 years old
+
+                ages[x] = ageOfPerson;  //  sets the current index of ages to be the age of person
             }
 
 
-            return (numberOfPeople, ages);
+            return (numberOfPeople, ages);  // return the intger of how many people and the int array of their ages
         }
         static (string, int) FilmSelection(string[,] filmLists, int minAge)
         {
-            string film = "";
-            bool valid = false;
-            int filmNumber = 0;
+            string film = "";           // Creates a string with the value ""
+            bool valid = false;         // creates the bool valid to be used in the loop
+            int filmNumber = 0;         // creates the int filmnunber as 0 to be used inside an outside the loop
 
-            while (valid == false)
+            while (valid == false)      // loops while the selection is invalid
             {
                 Console.WriteLine("\n");
-                filmNumber = GetIntInput($"\nChoose the film number in which you would like to see", 0, 5);
-                film = filmLists[filmNumber - 1, 1];
+                filmNumber = GetIntInput($"\nChoose the film number in which you would like to see", 0, 5);     // gets the user to input the film number they want between 1 and 5
+                film = filmLists[filmNumber - 1, 1];    // sets the film to be the inputed choice - 1  to account for array starting at 0 not 1 and with the second bit being the index the names are stored
                 Console.WriteLine($"You have choosen to see film number {filmNumber} this is film {film} is this correct yes or no");
-                string doubleCheck = Console.ReadLine().ToLower();
+                string doubleCheck = Console.ReadLine().ToLower();  // gets the user to say they are sure and makes it all lower case
 
                 if (doubleCheck != "no")
                 {
-                    if (minAge >= int.Parse(filmLists[filmNumber - 1, 3]))
+                    if (minAge >= int.Parse(filmLists[filmNumber - 1, 3]))  // checks if everyone is old enough by checking the 4th value of the filmlist array
                     {
                         Console.WriteLine("Eveyone in your group is old enough for the film\n");
 
                         // need to check if any screen has enough space for the group or possible softlock
 
-                        valid = true;
+                        valid = true;       //sets valid to be trute to end the loop
                     }
                     else
                         Console.WriteLine("One or more members of your group are too young to see the selected film please select a differant film");
