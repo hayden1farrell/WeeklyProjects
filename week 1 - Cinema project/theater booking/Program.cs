@@ -213,7 +213,7 @@ namespace Cine_booking
                         // need to check if any screen has enough space for the group or possible softlock
 
                         valid = true;       //sets valid to be trute to end the loop
-                    }
+                    }                       
                     else
                         Console.WriteLine("One or more members of your group are too young to see the selected film please select a differant film");
                 }
@@ -222,12 +222,12 @@ namespace Cine_booking
                     Console.WriteLine("You can choose a new film ");
                 }
             }
-            return (film, filmNumber);
+            return (film, filmNumber);      // returns the string  of the flim name and the int of the films number
         }
         static void Finsh(string selectedDate, double cost, int numberOfPeople, string film)
         {
             Console.WriteLine("\nYou will now be asked to pay");
-            Payment(cost, numberOfPeople);
+            Payment(cost, numberOfPeople);              // gets the user to pay the amount for the tickets
 
 
 
@@ -235,54 +235,55 @@ namespace Cine_booking
 
 
 
-            Console.WriteLine($"\n\n------\nCINEMA DELEXUE\nFILM : {film}\nNumber of people : {numberOfPeople}\nCOST : £{cost}\nDATE : {selectedDate}\n------");
+            Console.WriteLine($"\n\n------\nCINEMA DELEXUE\nFILM : {film}\nNumber of people : {numberOfPeople}\nCOST : £{cost}\nDATE : {selectedDate}\n------");        // prints the tickets with all its variables
 
-            Console.WriteLine("\n\nPress any key to finsh");
-            Console.ReadKey();
+            Console.WriteLine("\n\nPress any key to finsh");        // gives the user as long as they want to see the tickets
+            Console.ReadKey();                  // ends once any key is pressed
         }
         static void Payment(double cost, int numberOfPeople)
         {
-            Console.WriteLine($"\nIt will cost £{cost} for {numberOfPeople} number of people");
-            double payment = 0.00;
+            Console.WriteLine($"\nIt will cost £{cost} for {numberOfPeople} number of people");     // prints how much the tickets will cost
+            double payment = 0.00;      // creates the double payment to keep track of how much the user has payed
 
-            while (payment < cost)
+            while (payment < cost)      // loops untill the user has payed enough
             {
                 try
                 {
                     Console.WriteLine($"\nEnter the amount you wish to pay change will be given if needed current payment £{payment}");
-                    payment += double.Parse(Console.ReadLine());
+                    Console.Write("£");
+                    payment += double.Parse(Console.ReadLine());    //gets the users payment and converts it to a double
 
-                    if (payment < cost)
-                        Console.WriteLine("To little you must give more money");
+                    if (payment < cost)                             // sees if the user has payed enough
+                        Console.WriteLine("To little you must give more money");    
                 }
                 catch
                 {
-                    Console.WriteLine("Must be a number");
+                    Console.WriteLine("Must be a number");      // if the value given is not a number
                 }
             }
 
-            Console.WriteLine($"You have payed your change is £{payment - cost}");
+            Console.WriteLine($"You have payed your change is £{payment - cost}");      //prints out the change the user is owed
         }
         static (string, int) DateSelection(Dictionary<string, string[,]> screens, int numberOfPeople, int filmNumber)
         {
-            DateTime todaysDate = DateTime.Now;
+            DateTime todaysDate = DateTime.Now;         // gets the current date and stores it in a variable
             Console.WriteLine($"\ntodays date is {todaysDate.ToString("dd/MM/yyyy")} please select a date now more than 1 week later");
-            string seletedDate = "";
-            int daysInAdvance = 0;
+            string seletedDate = "";                    // creates a string for the users desirded date
+            int daysInAdvance = 0;                      // creates an int to keep track of how many days in advance the user wants
 
-            bool check = false;
-            while (check == false)
+            bool check = false;                         // creates a loop variable
+            while (check == false)                      // runs while the check is incomplete
             {
-                daysInAdvance = GetIntInput("How many days in advance do you wish to book", 0, 7);
-                seletedDate = todaysDate.AddDays(daysInAdvance).ToString("dd/MM/yyyy");
+                daysInAdvance = GetIntInput("How many days in advance do you wish to book", 0, 7);      // gets an int between 0 and 7 
+                seletedDate = todaysDate.AddDays(daysInAdvance).ToString("dd/MM/yyyy");                 // gets the users desired date by adding the days they inout to todays date
 
                 Console.WriteLine($"\nYou have selected {seletedDate} this is {daysInAdvance} days in the future");
                 Console.WriteLine("Are you happy with this choice yes or no");
-                string correctChoice = Console.ReadLine().ToLower();
+                string correctChoice = Console.ReadLine().ToLower();    // gets weather the user is happy with their choice and stores it on a string
 
-                bool enoughSpace = checkIfEnoughSpace(screens, numberOfPeople, daysInAdvance, filmNumber);
+                bool enoughSpace = checkIfEnoughSpace(screens, numberOfPeople, daysInAdvance, filmNumber);      // sees if their is enough space in that certain cinema on that certain day for a group of their size to sit
 
-                if (correctChoice != "no" && enoughSpace == true)
+                if (correctChoice != "no" && enoughSpace == true) // if the user agreees the dat is good and that the screen on that day has space
                     check = true;
                 else
                     Console.WriteLine("Please select again");
@@ -294,23 +295,23 @@ namespace Cine_booking
 
         static bool checkIfEnoughSpace(Dictionary<string, string[,]> screens, int numberOfPeople, int daysInAdvance, int filmNumber)
         {
-            bool enoughSpace = true;
-            int emptySeats = 0;
+            bool enoughSpace = true;        // Creates bool to save if there are enough spaces
+            int emptySeats = 0;             // stores how many empty seats there are
 
-            string[,] seats = screens[$"{daysInAdvance},{filmNumber}"];
+            string[,] seats = screens[$"{daysInAdvance},{filmNumber}"];     // gets the sests for the cinema screen on the certain date the user has requested
 
-            for (int i = 0; i < 9; i++)
+            for (int i = 0; i < 9; i++)         // loops through x axis rows
             {
-                for (int x = 0; x < 5; x++)
+                for (int x = 0; x < 5; x++)     // loops through all y axis rows
                 {
-                    if (seats[x, i] != "X")
-                        emptySeats += 1;
+                    if (seats[x, i] != "X")     // sees if the index of seats is not a X eg taken
+                        emptySeats += 1;        // adds 1 to the empty seat int
                 }
             }
 
-            if (numberOfPeople > emptySeats)
+            if (numberOfPeople > emptySeats)    // if the party size is more than the number of seats
             {
-                enoughSpace = false;
+                enoughSpace = false;            // enough space is set to false
                 Console.WriteLine("sorry this screen has too few seats remaining so please choose a differant day");
             }
 
@@ -319,19 +320,20 @@ namespace Cine_booking
 
         static double CalculateCost(int numberOfPeople, int[] ages)
         {
-            int minors = 0;
-            double price = 7.00;
-            int adults = 0;
+            int minors = 0;             // Creates the variable which stores how many people are bellow 18
+            const double price = 7.00;  // creats a const variable of price as it never changes      
+            int adults = 0;             // Creates the variable which stores how many people are 18 or above
 
-            foreach (int age in ages)
+            foreach (int age in ages)       // loops through everyones age
             {
-                if (age >= 18)
+                if (age >= 18)              // if they are older than 18
                     adults += 1;
                 else
                     minors += 1;
             }
 
-            double cost = Math.Round((double)((adults * price) + (double)(minors * price / 2)), 2);
+            double cost = Math.Round((double)((adults * price) + (double)(minors * price / 2)), 2);     
+            // gets the price by multiply the base price by the number of adults and add the price halfed by the number of minors
 
             Console.WriteLine($"\nThe cost of the tickets is £{cost} this is for {adults} adults {minors} minors");
 
@@ -342,13 +344,13 @@ namespace Cine_booking
 
         static string[,] initlizeScreen()
         {
-            string[,] seats = new string[5, 9];
+            string[,] seats = new string[5, 9]; // Creates a blank 2d string array
 
-            for (int y = 0; y < 5; y++)
+            for (int y = 0; y < 5; y++)         // loops through the y axis 
             {
-                for (int x = 0; x < 9; x++)
-                {
-                    seats[y, x] = "0";
+                for (int x = 0; x < 9; x++)     // loops through the x axis
+                {   
+                    seats[y, x] = "0";          // sets the value of the current index to 0
                 }
             }
 
@@ -356,14 +358,14 @@ namespace Cine_booking
         }
         static Dictionary<string, string[,]> Screen()
         {
-            Dictionary<string,string[,]> screens = new Dictionary<string, string[,]>();
-            for (int day = 0; day < 8; day++)
+            Dictionary<string,string[,]> screens = new Dictionary<string, string[,]>(); // creates a empty dictionary with a string key and a 2d string array value
+            for (int day = 0; day < 8; day++)       // loops for every possible day
             {
-                for (int screenNumber = 1; screenNumber < 6; screenNumber++)
+                for (int screenNumber = 1; screenNumber < 6; screenNumber++)    // loops for all posible cinema screens
                 {
-                    string dayAndScreenNum = $"{day},{screenNumber}";
+                    string dayAndScreenNum = $"{day},{screenNumber}";           // sets the key value to be the day,screenNUmber to be refered to later
 
-                    screens.Add(dayAndScreenNum, initlizeScreen());
+                    screens.Add(dayAndScreenNum, initlizeScreen());             // adds the key and value to the screen dictionary
                 }
             }
             return screens;
@@ -371,17 +373,17 @@ namespace Cine_booking
         static void DisplaySeats(string[,] seats)
         {
             Console.Write("  ");
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i < 10; i++)        // loops through the x axis seat numbers
             {
-                Console.Write($"{i}");
+                Console.Write($"{i}");          // prints the top line of seat numbers
             }
             Console.WriteLine();
-            for (int x = 0; x < 5; x++)
+            for (int x = 0; x < 5; x++)         // loops through the y axis of seats
             {
-                Console.Write($"{x + 1} ");
-                for (int y = 0; y < 9; y++)
+                Console.Write($"{x + 1} ");     // prints the y axis numbers
+                for (int y = 0; y < 9; y++)     
                 {
-                    Console.Write(seats[x, y]);
+                    Console.Write(seats[x, y]);     // prints the value of the current seat eg either 0 or X
                 }
                 Console.WriteLine();
             }
@@ -389,35 +391,35 @@ namespace Cine_booking
         static Dictionary<string, string[,]> SeatBooking(int numberOfPeople, string film, int filmNumber, int daysInAdvance, Dictionary<string, string[,]> screens)
         {
 
-            int xCorrdinate = 0;
-            int yCorrdinate = 0;
+            int xCorrdinate = 0;        // creates a int for the x cordinate seat
+            int yCorrdinate = 0;         // creates a int for the y cordinate seat
             Console.WriteLine("\nYou will now book your seats");
 
-            string[,] seats = screens[$"{daysInAdvance},{filmNumber}"];
+            string[,] seats = screens[$"{daysInAdvance},{filmNumber}"];     // gets the seating of the choosen day and the choosen film
 
-            for (int bookedseats = 0; bookedseats < numberOfPeople; bookedseats++)
+            for (int bookedseats = 0; bookedseats < numberOfPeople; bookedseats++)      // loops through every single person which the client wishes to book for
             {
-                bool valid = false;
-                while(valid == false)
+                bool valid = false;     // creates bool to allow the  loops to run
+                while(valid == false)   // loops while valid is false
                 {
-                    DisplaySeats(seats);
-                    xCorrdinate = GetIntInput($"\nplease select the x value of your wanted seat for person {bookedseats + 1}", 1, 9);
-                    yCorrdinate = GetIntInput($"\nplease select the y value of your wanted seat for person {bookedseats + 1}", 1, 5);
+                    DisplaySeats(seats);        // calls the function to display the seats of the selected day and the selected film
+                    xCorrdinate = GetIntInput($"\nplease select the x value of your wanted seat for person {bookedseats + 1}", 1, 9);       // gets where on the x axis the user would like to sit between 1 and 9
+                    yCorrdinate = GetIntInput($"\nplease select the y value of your wanted seat for person {bookedseats + 1}", 1, 5);       // gets where on the y axis the user would like to sit between 1 and 5
 
                     Console.WriteLine($"for person {bookedseats + 1} you have selected seat {xCorrdinate}{yCorrdinate}");
 
-                    if (seats[yCorrdinate - 1, xCorrdinate - 1] != "X")
+                    if (seats[yCorrdinate - 1, xCorrdinate - 1] != "X")     // checks to see if the choosen cordinates are open or if they are all ready book
                         valid = true;
                     else
                         Console.WriteLine("the seat is already taken please choose one labeled with 0\n");
                 }
                 Console.WriteLine($"For person {bookedseats + 1} you have book seat {xCorrdinate}{yCorrdinate}");
-                seats[yCorrdinate - 1, xCorrdinate -1] = "X";
+                seats[yCorrdinate - 1, xCorrdinate -1] = "X";       // sets the users selected seats value to be an X to display how it is taken
             }
 
-            screens[$"{daysInAdvance},{filmNumber}"] = seats;
+            screens[$"{daysInAdvance},{filmNumber}"] = seats;       // changes the value of the selected date and film dictionary entery to the newly changed seating plan
 
-            DisplaySeats(screens[$"{daysInAdvance},{filmNumber}"]);
+            DisplaySeats(screens[$"{daysInAdvance},{filmNumber}"]);     // displays the seating plan with all of the new changes
 
             Console.WriteLine("You have now book your seats\n");
 
