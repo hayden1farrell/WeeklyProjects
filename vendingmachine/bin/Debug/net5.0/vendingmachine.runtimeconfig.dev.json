@@ -1,0 +1,8 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "/home/osdesa/.dotnet/store/|arch|/|tfm|",
+      "/home/osdesa/.nuget/packages"
+    ]
+  }
+}

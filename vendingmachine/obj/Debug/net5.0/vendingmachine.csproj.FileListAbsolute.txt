@@ -1,0 +1,16 @@
+/home/osdesa/Documents/code/vendingmachine/obj/Debug/net5.0/vendingmachine.csproj.AssemblyReference.cache
+/home/osdesa/Documents/code/vendingmachine/obj/Debug/net5.0/vendingmachine.GeneratedMSBuildEditorConfig.editorconfig
+/home/osdesa/Documents/code/vendingmachine/obj/Debug/net5.0/vendingmachine.AssemblyInfoInputs.cache
+/home/osdesa/Documents/code/vendingmachine/obj/Debug/net5.0/vendingmachine.AssemblyInfo.cs
+/home/osdesa/Documents/code/vendingmachine/obj/Debug/net5.0/vendingmachine.csproj.CoreCompileInputs.cache
+/home/osdesa/Documents/code/vendingmachine/bin/Debug/net5.0/vendingmachine
+/home/osdesa/Documents/code/vendingmachine/bin/Debug/net5.0/vendingmachine.deps.json
+/home/osdesa/Documents/code/vendingmachine/bin/Debug/net5.0/vendingmachine.runtimeconfig.json
+/home/osdesa/Documents/code/vendingmachine/bin/Debug/net5.0/vendingmachine.runtimeconfig.dev.json
+/home/osdesa/Documents/code/vendingmachine/bin/Debug/net5.0/vendingmachine.dll
+/home/osdesa/Documents/code/vendingmachine/bin/Debug/net5.0/ref/vendingmachine.dll
+/home/osdesa/Documents/code/vendingmachine/bin/Debug/net5.0/vendingmachine.pdb
+/home/osdesa/Documents/code/vendingmachine/obj/Debug/net5.0/vendingmachine.dll
+/home/osdesa/Documents/code/vendingmachine/obj/Debug/net5.0/ref/vendingmachine.dll
+/home/osdesa/Documents/code/vendingmachine/obj/Debug/net5.0/vendingmachine.pdb
+/home/osdesa/Documents/code/vendingmachine/obj/Debug/net5.0/vendingmachine.genruntimeconfig.cache
