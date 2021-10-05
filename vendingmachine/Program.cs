@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 
 namespace vendingmachine
 {
@@ -13,9 +14,9 @@ namespace vendingmachine
 
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            int numberOfItems = 12;
+            int numberOfItems = GetNumberOfLines();
             item[] items = FillVendingMachine(numberOfItems);
             bool run = true;
 
@@ -29,7 +30,15 @@ namespace vendingmachine
             }
         }
 
-        static void Admin(item[] items){
+        static int GetNumberOfLines(){
+            // get the final  item code instead
+            string directoary = System.IO.Directory.GetCurrentDirectory() + "/items.txt";
+            string[] items = System.IO.File.ReadAllLines(directoary);
+            Console.WriteLine(items.Length);
+
+            return items.Length;
+        }
+        static void Admin(item[] items, int numberOfItems){
             Console.WriteLine("ADMIN PANNEL");
 
             Console.WriteLine("edit delete or create item (E/D/C)");
@@ -42,23 +51,105 @@ namespace vendingmachine
                 items = DeleteItem(items);
                 
             if (option == "C")
-                items = CreateItem(items);
+                items = CreateItem(items, numberOfItems);
+
+            string directoary = System.IO.Directory.GetCurrentDirectory() + "/items.txt";
+            using (StreamWriter writer = File.CreateText(directoary)) 
+            {
+                foreach(var item in items){
+                    string msg = $"{item.name},{item.price},{item.position},{item.numberLeft}";
+                    Console.WriteLine(msg);
+                    writer.WriteLine(msg);
+                }
+            }	
         // needs perma option which writes to file
 
         // logs all login attempts
 
         // has a password == "Adm1n"
 
-        //Alows the user to change the price name of an item
+            DisplayItems(items);
 
-        // when adding a new item it auto does the product number 
-
-        //double checks to make sure the admin is correct in the price and item they added
-
-        // closes the program
+            Main();
         }
-        
-        static items[] EditItem(item[] items){
+
+        private static item[] DeleteItem(item[] items)
+        {
+            DisplayItems(items);
+            Console.WriteLine("Enter the item code for which you wish to edit");
+            string itemCode = Console.ReadLine();      
+
+            item[] array = new item[items.Length - 1];
+            int i = 0;
+            int index = 0;
+
+            foreach(var item in items){
+                string[] itemStats = GetItems(i);
+
+                Console.WriteLine(itemStats[2] + itemCode);
+                if(itemStats[2] != itemCode)
+                {
+                    if(index == i)
+                        array[index] = items[i];
+                    else{
+                        string tempCode = "";
+                        int code = int.Parse(itemStats[2]) - 1;
+                        if(code < 10)
+                            itemCode = "0" + code.ToString();
+                        else
+                            itemCode = code.ToString();
+
+                        tempCode = itemCode;
+
+                        item[] temp = new item[1];
+                        temp[0].name = itemStats[0];
+                        temp[0].price = double.Parse(itemStats[1]);
+                        temp[0].position = itemCode;
+                        temp[0].numberLeft = int.Parse(itemStats[3]);
+
+                        array[index] = temp[0];
+                    }
+                    index++;
+                }
+
+                DisplayItems(array);
+                i++;
+            }
+
+            Console.ReadKey();
+            return array;  
+        }
+
+        private static item[] CreateItem(item[] items, int numberOfItems)
+        {
+            // NEEDS WORK
+            string numberCode = (numberOfItems + 1).ToString();
+
+            if(numberOfItems + 1 < 10)
+                numberCode = "0" + numberCode.ToString();
+
+            DisplayItems(items);
+            Console.WriteLine("Enter the name of the new product");
+            string name = Console.ReadLine();
+
+            Console.WriteLine("Enter the price of the new prod'uct");
+            double price = double.Parse(Console.ReadLine());
+
+            Console.WriteLine("Enter the amount of the new product");
+            int amount = int.Parse(Console.ReadLine());
+
+            Console.WriteLine(numberOfItems);
+
+            item[] newItems = FillVendingMachine(numberOfItems + 1);
+            newItems[numberOfItems + 1].name = name;
+            newItems[numberOfItems + 1].price = price;
+            newItems[numberOfItems + 1].numberLeft = amount;
+            newItems[numberOfItems + 1].position = numberCode;
+
+            return newItems;
+        }
+
+        static item[] EditItem(item[] items){
             DisplayItems(items);
             Console.WriteLine("Enter the item code for which you wish to edit");
             int itemCode = int.Parse(Console.ReadLine());
@@ -71,11 +162,11 @@ namespace vendingmachine
             if (option == "name")
                 items[itemCode - 1].name = newValue;
             if(option == "price")
-                items[itemCode - 1].price = newValue;
+                items[itemCode - 1].price = double.Parse(newValue);
             if(option == "stock")
-                items[itemCode - 1].stock = newValue;
+                items[itemCode - 1].numberLeft = int.Parse(newValue);
 
-            return items
+            return items;
         }
 
         static item[] UpdateStock(item[] items, int itemCode){
@@ -173,7 +264,7 @@ namespace vendingmachine
                 productCode = Console.ReadLine();
 
                 if(productCode == "1337")
-                    Admin(items);
+                    Admin(items, amountOfItems);
                     //MIGHT NEED TO FORCE RESTART
 
                 for (int i = 1; i < amountOfItems + 1; i++)
@@ -224,7 +315,7 @@ namespace vendingmachine
             string directoary = System.IO.Directory.GetCurrentDirectory() + "/items.txt";
             string[] items = System.IO.File.ReadAllLines(directoary);
 
-            return items[index].Split(",");
+            return items[index].Split(","); // this return a string[] with the elements being the values seperated by the commas
 
         }
 
@@ -243,7 +334,7 @@ namespace vendingmachine
             Console.Write("NAME\t\t\t");Console.Write($"PRICE\t\t\t");Console.Write($"CODE\t\t\t");Console.Write($"AMOUNT\n");
 
             foreach(var item in items){
-                Console.Write($"{item.name,15}");
+                Console.Write($"{item.name,-15}");
                 Console.Write($"{item.price, 15}");
                 Console.Write($"{item.position, 15}");
                 Console.Write($"{item.numberLeft, 15}\n");
